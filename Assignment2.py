@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 
 
-Population = []
+cities = []
 def addtoPopulation(x,y):
-    n = str(x) + "," +  str(y)
-    Population.append(n)
+    n = x, y
+    cities.append(n)
 
 
 
@@ -32,7 +32,5 @@ addtoPopulation(180,100)
 addtoPopulation(180,200)
 addtoPopulation(200,40)
 addtoPopulation(200,160)
-
-
 
 
