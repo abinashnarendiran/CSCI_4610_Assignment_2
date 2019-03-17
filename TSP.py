@@ -125,3 +125,47 @@ def offSpring(matingpool, eliteSize):
         child = crossover(pool[i], pool[len(matingpool) - i - 1])
         children.append(child)
     return children
+
+
+def mutate(individual, mutationRate):
+    for swapped in range(len(individual)):
+        if (random.random() < mutationRate):
+            swapWith = int(random.random() * len(individual))
+
+            city1 = individual[swapped]
+            city2 = individual[swapWith]
+
+            individual[swapped] = city2
+            individual[swapWith] = city1
+    return individual
+
+
+def mutatePopulation(population, mutationRate):
+    mutatedPop = []
+
+    for ind in range(0, len(population)):
+        mutatedInd = mutate(population[ind], mutationRate)
+        mutatedPop.append(mutatedInd)
+    return mutatedPop
+
+
+def nextGeneration(currentGen, eliteSize, mutationRate):
+    popRanked = FitnessForEachCity(currentGen)
+    selectionResults = selection(popRanked, eliteSize)
+    matingpool = mating(currentGen, selectionResults)
+    children = offSpring(matingpool, eliteSize)
+    nextGeneration = mutatePopulation(children, mutationRate)
+    return nextGeneration
+
+
+def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
+    pop = initialPopulation(popSize, population)
+    print("Initial distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+
+    for i in range(0, generations):
+        pop = nextGeneration(pop, eliteSize, mutationRate)
+
+    print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+    bestRouteIndex = FitnessForEachCity(pop)[0][0]
+    bestRoute = pop[bestRouteIndex]
+    return bestRoute

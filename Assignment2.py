@@ -1,14 +1,12 @@
-import numpy as np
-import random
-import matplotlib.pyplot as plt
-
+from .TSP import  City
+from .TSP import  geneticAlgorithm
 
 
 
 cities = []
-def addtoPopulation(x,y):
-    n = x, y
-    cities.append(n)
+def addtoPopulation(x1,y1):
+
+    cities.append(City(x = x1, y = y1))
 
 
 
@@ -33,4 +31,6 @@ addtoPopulation(180,200)
 addtoPopulation(200,40)
 addtoPopulation(200,160)
 
+
+geneticAlgorithm(population= cities, popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
 
