@@ -12,11 +12,10 @@ class City:
         xDistance = abs(self.x - dest.x)
         yDistance = abs(self.y - dest.y)
         distance = np.sqrt((xDistance** 2) + (yDistance ** 2))
+        return distance
 
     def __repr__(self):
         return "(" + str(self.x) + "," + str(self.y) + ")"
-
-
 
 class Fitness:
     def __init__(self, route):
@@ -30,11 +29,13 @@ class Fitness:
             for i in range(0, len(self.route)):
                 fromCity = self.route[i]
                 toCity = None
+
                 if i + 1 < len(self.route):
                     toCity = self.route[i + 1]
                 else:
                     toCity = self.route[0]
-                pathDistance += fromCity.distance(toCity)
+
+                pathDistance = pathDistance + fromCity.get_distance(toCity)
             self.distance = pathDistance
         return self.distance
 
@@ -67,7 +68,7 @@ def FitnessForEachCity(population):
 def selection(popRanked, size):
     selectionResults = []
     df = pd.DataFrame(np.array(popRanked), columns=["Index", "Fitness"])
-    print(df)
+    #print(df)
 
 
     for i in range(0, size):
@@ -160,12 +161,13 @@ def nextGeneration(currentGen, eliteSize, mutationRate):
 
 def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
     pop = initialPopulation(popSize, population)
-    print("Initial distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+    #print("Initial distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
 
     for i in range(0, generations):
         pop = nextGeneration(pop, eliteSize, mutationRate)
 
-    print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+
+    #print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
     bestRouteIndex = FitnessForEachCity(pop)[0][0]
     bestRoute = pop[bestRouteIndex]
     return bestRoute

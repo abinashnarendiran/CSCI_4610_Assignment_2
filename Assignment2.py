@@ -1,7 +1,5 @@
-from .TSP import  City
-from .TSP import  geneticAlgorithm
 
-
+from CSCI_4610_Assignment_2.TSP import City, geneticAlgorithm
 
 cities = []
 def addtoPopulation(x1,y1):
@@ -32,5 +30,5 @@ addtoPopulation(200,40)
 addtoPopulation(200,160)
 
 
-geneticAlgorithm(population= cities, popSize=100, eliteSize=20, mutationRate=0.01, generations=500)
+print(geneticAlgorithm(population= cities, popSize=20, eliteSize=20, mutationRate=0.01, generations=100))
 
