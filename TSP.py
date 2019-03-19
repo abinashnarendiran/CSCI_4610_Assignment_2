@@ -167,7 +167,8 @@ def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
         pop = nextGeneration(pop, eliteSize, mutationRate)
 
 
-    #print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+    print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
     bestRouteIndex = FitnessForEachCity(pop)[0][0]
     bestRoute = pop[bestRouteIndex]
+    print("Best Route:")
     return bestRoute
