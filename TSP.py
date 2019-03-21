@@ -8,86 +8,86 @@ class City:
         self.x = x
         self.y =  y
 
-    def get_distance(self, dest):
+    def getDis(self, dest):
         xDistance = abs(self.x - dest.x)
         yDistance = abs(self.y - dest.y)
-        distance = np.sqrt((xDistance** 2) + (yDistance ** 2))
-        return distance
+        dis = np.sqrt((xDistance** 2) + (yDistance ** 2))
+        return dis
 
     def __repr__(self):
         return "(" + str(self.x) + "," + str(self.y) + ")"
 
 class Fitness:
-    def __init__(self, route):
-        self.route = route
-        self.distance = 0
-        self.fitness = 0.0
+    def __init__(self, path):
+        self.path = path
+        self.dis = 0
+        self.fit = 0.0
 
     def routeDistance(self):
-        if self.distance == 0:
-            pathDistance = 0
-            for i in range(0, len(self.route)):
-                fromCity = self.route[i]
-                toCity = None
+        if self.dis == 0:
+            routeDis = 0
+            for i in range(0, len(self.path)):
+                cityFrom = self.path[i]
+                cityTo = None
 
-                if i + 1 < len(self.route):
-                    toCity = self.route[i + 1]
+                if i + 1 < len(self.path):
+                    cityTo = self.path[i + 1]
                 else:
-                    toCity = self.route[0]
+                    cityTo = self.path[0]
 
-                pathDistance = pathDistance + fromCity.get_distance(toCity)
-            self.distance = pathDistance
-        return self.distance
+                routeDis = routeDis + cityFrom.getDis(cityTo)
+            self.dis = routeDis
+        return self.dis
 
-    def routeFitness(self):
-        if self.fitness == 0:
-            self.fitness = 1 / float(self.routeDistance())
-        return self.fitness
+    def routeFit(self):
+        if self.fit == 0:
+            self.fit = 1 / float(self.routeDistance())
+        return self.fit
 
 
 
-def createRoute(cityList):
-    route = random.sample(cityList, len(cityList))
-    return route
+def makePath(citiesList):
+    path = random.sample(citiesList, len(citiesList))
+    return path
 
-def initialPopulation(popSize, cityList):
+def initialPopulation(popSize, citiesList):
     population = []
 
     for i in range(0, popSize):
-        population.append(createRoute(cityList))
+        population.append(makePath(citiesList))
     return population
 
 
-def FitnessForEachCity(population):
+def FitnessPerCity(population):
     fitnessResults = {}
     for i in range(0,len(population)):
-        fitnessResults[i] = Fitness(population[i]).routeFitness()
+        fitnessResults[i] = Fitness(population[i]).routeFit()
     return sorted(fitnessResults.items())
 
 
-def selection(popRanked, size):
-    selectionResults = []
-    df = pd.DataFrame(np.array(popRanked), columns=["Index", "Fitness"])
+def selection(rankPop, size):
+    selectPop = []
+    df = pd.DataFrame(np.array(rankPop), columns=["Index", "Fitness"])
     #print(df)
 
 
     for i in range(0, size):
-        selectionResults.append(popRanked[i][0])
-    for i in range(0, len(popRanked) - size):
+        selectPop.append(rankPop[i][0])
+    for i in range(0, len(rankPop) - size):
         pick = 100 * random.random()
-        for i in range(0, len(popRanked)):
+        for i in range(0, len(rankPop)):
             if pick <= df.iat[i, 3]:
-                selectionResults.append(popRanked[i][0])
+                selectPop.append(rankPop[i][0])
                 break
-    return selectionResults
+    return selectPop
 
 
-def mating(population, selectionResults):
-    matingpool = []
-    for i in range(0, len(selectionResults)):
-        index = selectionResults[i]
-        matingpool.append(population[index])
-    return matingpool
+def mating(population, selectPop):
+    matingPool = []
+    for i in range(0, len(selectPop)):
+        index = selectPop[i]
+        matingPool.append(population[index])
+    return matingPool
 
 
 def crossover(parent1, parent2):
@@ -114,23 +114,23 @@ def crossover(parent1, parent2):
 
 
 
-def offSpring(matingpool, eliteSize):
+def offSpring(matingPool, fitSize):
     children = []
-    length = len(matingpool) - eliteSize
-    pool = random.sample(matingpool, len(matingpool))
+    length = len(matingPool) - fitSize
+    pool = random.sample(matingPool, len(matingPool))
 
-    for i in range(0, eliteSize):
-        children.append(matingpool[i])
+    for i in range(0, fitSize):
+        children.append(matingPool[i])
 
     for i in range(0, length):
-        child = crossover(pool[i], pool[len(matingpool) - i - 1])
+        child = crossover(pool[i], pool[len(matingPool) - i - 1])
         children.append(child)
     return children
 
 
-def mutate(individual, mutationRate):
+def mutate(individual, mutRate):
     for swapped in range(len(individual)):
-        if (random.random() < mutationRate):
+        if (random.random() < mutRate):
             swapWith = int(random.random() * len(individual))
 
             city1 = individual[swapped]
@@ -141,34 +141,34 @@ def mutate(individual, mutationRate):
     return individual
 
 
-def mutatePopulation(population, mutationRate):
+def mutPopulation(population, mutRate):
     mutatedPop = []
 
-    for ind in range(0, len(population)):
-        mutatedInd = mutate(population[ind], mutationRate)
-        mutatedPop.append(mutatedInd)
+    for index in range(0, len(population)):
+        mutIndex = mutate(population[index], mutRate)
+        mutatedPop.append(mutIndex)
     return mutatedPop
 
 
-def nextGeneration(currentGen, eliteSize, mutationRate):
-    popRanked = FitnessForEachCity(currentGen)
-    selectionResults = selection(popRanked, eliteSize)
-    matingpool = mating(currentGen, selectionResults)
-    children = offSpring(matingpool, eliteSize)
-    nextGeneration = mutatePopulation(children, mutationRate)
-    return nextGeneration
+def nGeneration(currentGen, fitSize, mutRate):
+    rankPop = FitnessPerCity(currentGen)
+    selectPop = selection(rankPop, fitSize)
+    matingPool = mating(currentGen, selectPop)
+    children = offSpring(matingPool, fitSize)
+    nGeneration = mutPopulation(children, mutRate)
+    return nGeneration
 
 
-def geneticAlgorithm(population, popSize, eliteSize, mutationRate, generations):
-    pop = initialPopulation(popSize, population)
-    #print("Initial distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
+def geneticAlgorithm(population, popSize, fitSize, mutRate, gens):
+    newPop = initialPopulation(popSize, population)
+    #print("Initial distance: " + str(1 / FitnessPerCity(newPop)[0][1]))
 
-    for i in range(0, generations):
-        pop = nextGeneration(pop, eliteSize, mutationRate)
+    for i in range(0, gens):
+        newPop = nGeneration(newPop, fitSize, mutRate)
 
 
-    print("Final distance: " + str(1 / FitnessForEachCity(pop)[0][1]))
-    bestRouteIndex = FitnessForEachCity(pop)[0][0]
-    bestRoute = pop[bestRouteIndex]
+    print("Final distance: " + str(1 / FitnessPerCity(newPop)[0][1]))
+    bestRouteIndex = FitnessPerCity(newPop)[0][0]
+    bestRoute = newPop[bestRouteIndex]
     print("Best Route:")
     return bestRoute
